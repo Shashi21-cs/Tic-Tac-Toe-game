@@ -205,10 +205,84 @@ int check_victory(char **game_board, int board_size, char current_mark) {
 	return ok;
 }
 
-
+//Check if board is full (Draw condition)
+int board_filled(char **game_board, int board_size) {
+	for (int r = 0; r < board_size; r++)
+		for (int c = 0; c < board_size; c++)
+			if (game_board[r][c] == '-') return 0; //Found empty spot
+       	return 1; //Board is full
+}
 		
 		 	
+//Human Turn
+void human_move(char **game_board, int board_size, char current_mark) {
+	int r, c;
+	while (1) {
+		printf("Enter row and column: ");
+		scanf("%d %d", &r, &c);
+		r--; c--;
+		if (valid_move(game_board, board_size, r, c)) {
+			game_board[r][c] = current_mark;
+			break;
+		} else {
+			printf("Invalid move, Try Again..\n");
+		}
+	}
+}
 
+//Computer turn
+void computer_move(char **game_board, int board_size, char current_mark, const char player_marks[], int total participants, char opponent) {
+	int r, c;
+
+	//1. Try to win
+	for (int i = 0; i < board_size; i++) {
+		for (int j = 0; j < board_size; j++) {
+			if (valid_move(game_board, board_size, i, j)) {
+				board [i] [j] = mark;
+				if (check_victory(game_board, board_size, current_mark)) {
+					printf("Computer plays at (%d. %d) to WIN\n", i + 1, j + 1;
+					return;
+				}
+				board [i] [j] = '-';
+			}
+		}
+	}
+
+	//2. Try to bloock opponent
+	for (int i = 0; i < board_size; i++) {
+		for (int j = 0; j < board_size; j++) {
+			if (valid_move(game_board, board_size, opponent)) {
+		           	game_board [i] [j] = opponent;
+				if (check_victory(game_board, board_size, opponent)) {
+					game_board [i] [j] = current_mark;
+					printf("Computer blocks at (%d, %d)\n", i + 1, j + 1);
+					return;
+				}
+				game_board [i] [j] = '-';
+			}
+		}
+	}
+
+	//3. Else random valid move
+	do {
+		r = rand() % board_size;
+		c = rand() % board_size;
+	} while (!valid_move(game_board, board_size, r, c));
+
+	board [r] [c] = mark;
+	printf("Computer choose random (%d, %d)\n", r + 1, c + 1);
+}
+
+//Ask player type
+int get_participant_type(char player_mark) {
+	int type;
+	while (1) {
+		printf{"Participant %c - 0 = Human, 1 = Computer: ", player_mark);
+		scanf("%d", &type);
+		if (type == 0 || type == 1) return type;
+		printf("Invalid..! Enter 0 or 1.\n");
+		}
+	}
 
 
 
