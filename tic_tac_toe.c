@@ -9,18 +9,18 @@ void display_welcome();
 void setup_game_board(char **game_board, int board_size);
 void print_board(char **game_board, int board_size);
 int valid_move(char **game_board, int board_size, int row, int col);
-int check_victory(char **game_board, int board_size, char current_ mark);
+int check_victory(char **game_board, int board_size, char current_mark);
 int board_filled(char **game_board, int board_size);
-void human_move(char **game_board, int board_size, char mark);
-void computer_move(char **game_board, int board_size, char opponent, char current mark,const char player_marks[], int total_players);
-int get_participant_type(char symbol);
+void human_move(char **game_board, int board_size, char current_mark);
+void computer_move(char **game_board, int board_size, char opponent, char current_mark);
+int get_participant_type(char player_marks);
 
 int main() {
 	srand((unsigned int)time(NULL)); //send random number generator
 
 	int board_size, game_mode, total_players;
-	char player_marks[MAX_PARTICIPANTS} = {'X', 'O', 'Z'};
-        int participant_type[MAX_PARTICIPANTS]; // 0 = human, 1 = computer
+	char player_marks[MAX_PARTICIPANT] = {'X', 'O', 'Z'};
+        int participant_type[MAX_PARTICIPANT]; // 0 = human, 1 = computer
 	display_welcome(); //Display welcome message
 
 	//Prompt used for board size
@@ -37,7 +37,7 @@ int main() {
 		printf("1. Human vs Human\n");
 		printf("2. Human vs Computer\n");
 		printf("3. Custom (2-3 player with type)\n");
-		Printf("Enter option (1-3): ");
+		printf("Enter option (1-3): ");
 		scanf("%d", &game_mode);
 		if (game_mode >= 1 && game_mode <= 3) break;
 		printf("Invalid option. Choose 1, 2 or 3.\n");
@@ -60,16 +60,15 @@ int main() {
 		    printf("Invalid number. Enter 2 or 3.\n");
             }
 	    for (int i = 0; i < total_players; i++) {
-		    participant_type[i] = get_participant_type(symbol[i]);
+		    participant_type[i] = get_participant_type(player_marks[i]);
 	    }
    	}
 	
 	//Allocate board memory
 	char **game_board = (char **)malloc(board_size * sizeof(char *));
-	for (int i = 0; i < biard_size; i++) {
+	for (int i = 0; i < board_size; i++) {
 		game_board[i] = (char *)malloc(board_size * sizeof(char));
 	}
-
 	setup_game_board(game_board, board_size); //Setup empty board
 	int current_turn = 0;
 	int game_over = 0;
@@ -79,11 +78,11 @@ int main() {
 		print_board(game_board, board_size);
 		printf("Participant %d (%c)'s move\n", current_turn + 1, player_marks[current_turn]);
 		//Human or Computer takes a turn
-		if (participant_type[current index] == 0) {
+		if (participant_type[current_turn] == 0) {
 			human_move(game_board, board_size, player_marks[current_turn]);
 	        } else {
 			char opponent = player_marks[(current_turn + 1) % total_players];
-			computer_mov(game_board, board_size, player_marks[current_turn], opponent);
+			computer_move(game_board, board_size, player_marks[current_turn], opponent);
 		}
 
 		//Check game state after the move
@@ -101,7 +100,7 @@ int main() {
 		}
 		
 	//Clean up allocated memory
-	for (int i = 0, i < board_size; i++) {
+	for (int i = 0; i < board_size; i++) {
 		free(game_board[i]);
 	}
 	free(game_board);
@@ -153,56 +152,50 @@ void print_board(char **game_board, int board_size) {
 
 //Validate move: checks bounds and if cell is empty
 int valid_move(char **game_board, int board_size, int row, int col) {
-	if (row < 0 || row >= size) return 0;
-	if (col < 0 || col >= size) return 0;
+	if (row < 0 || row >= board_size) return 0;
+	if (col < 0 || col >= board_size) return 0;
 	if (game_board[row][col] != '-') return 0;
 	return 1;
 }
 
 //Check for Winner
 int check_victory(char **game_board, int board_size, char current_mark) {
+	int count;
 	//Check Rows
-	for (i = 0; i < board_size; i++) {
-		int ok = 1;
+	for (int r = 0; r < board_size; r++) {
+		count = 0;
 		for (int c = 0; c < board_size; c++) {
-			if (game_board[r][c] != current_mark) {
-				ok = 0;
-				break;
-			}
-			if (ok) return 1;
+			if (game_board[r][c] == current_mark) count++;
+		}
+		if (count == board_size) return 1;
 	}
 	
 	//Check columns
 	for (int c = 0; c < board_size; c++) {
-		int o = 1;
+		count = 0;
 		for (int r = 0; r < board_size; r++) {
-			if (board[r][c] != mark) {
-				ok = 0;
-				break;
-			}
+			if (game_board[r][c] == current_mark) count++;
 		}
-		if (ok) return 1;
+		if (count == board_size) return 1;
+		
 	}
 
 	//Check Main Diagonal
-	int ok = 1;
-        for (int i = 0; i < board_size; i++) {
-		if (game_board[i][i] != current_mark) {
-			ok = 0;
-			break;
-		}
+	count = 0;
+        for (int r = 0; r < board_size; r++) {
+		if (game_board[r][r] == current_mark) count++;
 	}
-	if (ok) return 1;
+	if (count == board_size) return 1;
+	
 
 	//Check Anti-Diagonal
-	ok = 1;
-	for (int i = 0; i < board_size; i++) {
-		if (game_board[i] [board_size - 1 - i] != mark) {
-			ok = 0;
-			break;
-		}
+	count = 0;
+	for (int r = 0; r < board_size; r++) {
+		if (game_board[r] [board_size - 1 - r] == current_mark) count++;
 	}
-	return ok;
+	if (count == board_size) return 1;
+
+	return 0;
 }
 
 //Check if board is full (Draw condition)
@@ -231,19 +224,19 @@ void human_move(char **game_board, int board_size, char current_mark) {
 }
 
 //Computer turn
-void computer_move(char **game_board, int board_size, char current_mark, const char player_marks[], int total participants, char opponent) {
+void computer_move(char **game_board, int board_size, char current_mark, char opponent) {
 	int r, c;
 
 	//1. Try to win
 	for (int i = 0; i < board_size; i++) {
 		for (int j = 0; j < board_size; j++) {
 			if (valid_move(game_board, board_size, i, j)) {
-				board [i] [j] = mark;
+				game_board [i] [j] = current_mark;
 				if (check_victory(game_board, board_size, current_mark)) {
-					printf("Computer plays at (%d. %d) to WIN\n", i + 1, j + 1;
+					printf("Computer plays at (%d. %d) to WIN\n", i + 1, j + 1);
 					return;
 				}
-				board [i] [j] = '-';
+				game_board [i] [j] = '-';
 			}
 		}
 	}
@@ -251,7 +244,7 @@ void computer_move(char **game_board, int board_size, char current_mark, const c
 	//2. Try to bloock opponent
 	for (int i = 0; i < board_size; i++) {
 		for (int j = 0; j < board_size; j++) {
-			if (valid_move(game_board, board_size, opponent)) {
+			if (valid_move(game_board, board_size, i, j)) {
 		           	game_board [i] [j] = opponent;
 				if (check_victory(game_board, board_size, opponent)) {
 					game_board [i] [j] = current_mark;
@@ -269,7 +262,7 @@ void computer_move(char **game_board, int board_size, char current_mark, const c
 		c = rand() % board_size;
 	} while (!valid_move(game_board, board_size, r, c));
 
-	board [r] [c] = mark;
+	game_board [r] [c] = current_mark;
 	printf("Computer choose random (%d, %d)\n", r + 1, c + 1);
 }
 
@@ -277,7 +270,7 @@ void computer_move(char **game_board, int board_size, char current_mark, const c
 int get_participant_type(char player_mark) {
 	int type;
 	while (1) {
-		printf{"Participant %c - 0 = Human, 1 = Computer: ", player_mark);
+		printf("Participant %c - 0 = Human, 1 = Computer: ", player_mark);
 		scanf("%d", &type);
 		if (type == 0 || type == 1) return type;
 		printf("Invalid..! Enter 0 or 1.\n");
