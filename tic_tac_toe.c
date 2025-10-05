@@ -110,6 +110,103 @@ int main() {
 }
 
 
+//Show welcome message
+void display_welcome() {
+	printf("..Welcome to Tic-Tac-Toe..\n");
+	printf("Rules:\n");
+	printf("- 2 or 3 participants can play.\n");
+	printf("- Fill a row, column or diagonal to win.\n");
+	printf("- Board size range: 3 to 10\n");
+}
+
+//Initialize empty board
+void setup_game_board(char **game_board, int board_size) {
+	for (int i = 0; i < board_size; i++)
+		for (int j = 0; j < board_size; j++)
+			game_board[i][j] = '-';
+}
+
+//Print board with grid lines
+void print_board(char **game_board, int board_size) {
+	printf("\n  ");
+	for (int c = 0; c < board_size; c++) printf(" %2d", c + 1);
+	printf("\n");
+
+	for (int r = 0; r < board_size; r++) {
+		printf(" %2d ", r + 1);
+		for (int c = 0; c < board_size; c++) {
+			printf(" %c ", game_board[r][c]);
+			if (c < board_size - 1) printf("|");
+		}
+		printf("\n");
+		if (r < board_size - 1) {
+			printf("  ");
+			for (int c = 0; c < board_size; c++) {
+				printf("---");
+				if (c < board_size - 1) printf("+");
+			}
+			printf("\n");
+		}
+	}
+	printf("\n");
+}
+
+//Validate move: checks bounds and if cell is empty
+int valid_move(char **game_board, int board_size, int row, int col) {
+	if (row < 0 || row >= size) return 0;
+	if (col < 0 || col >= size) return 0;
+	if (game_board[row][col] != '-') return 0;
+	return 1;
+}
+
+//Check for Winner
+int check_victory(char **game_board, int board_size, char current_mark) {
+	//Check Rows
+	for (i = 0; i < board_size; i++) {
+		int ok = 1;
+		for (int c = 0; c < board_size; c++) {
+			if (game_board[r][c] != current_mark) {
+				ok = 0;
+				break;
+			}
+			if (ok) return 1;
+	}
+	
+	//Check columns
+	for (int c = 0; c < board_size; c++) {
+		int o = 1;
+		for (int r = 0; r < board_size; r++) {
+			if (board[r][c] != mark) {
+				ok = 0;
+				break;
+			}
+		}
+		if (ok) return 1;
+	}
+
+	//Check Main Diagonal
+	int ok = 1;
+        for (int i = 0; i < board_size; i++) {
+		if (game_board[i][i] != current_mark) {
+			ok = 0;
+			break;
+		}
+	}
+	if (ok) return 1;
+
+	//Check Anti-Diagonal
+	ok = 1;
+	for (int i = 0; i < board_size; i++) {
+		if (game_board[i] [board_size - 1 - i] != mark) {
+			ok = 0;
+			break;
+		}
+	}
+	return ok;
+}
+
+
+		
 		 	
 
 
