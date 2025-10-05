@@ -1,0 +1,11 @@
+Tic-Tac-Toe Game Started
+Player X placed at (1,1)
+Computer made a random move
+Player X placed at (2,2)
+Computer blocked opponent
+Player X placed at (2,3)
+Computer blocked opponent
+Player X placed at (1,2)
+Computer blocked opponent
+Player X placed at (3,1)
+Game ended in a DRAW
